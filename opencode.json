@@ -1,12 +1,12 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "github-copilot/claude-sonnet-4.6",
+  "model": "ai-gateway/anthropic/claude-sonnet-4-6",
   "instructions": [],
   "agent": {
     "orchestrator": {
       "description": "Receives support requests, delegates investigation and data analysis, composes the final response.",
       "mode": "primary",
-      "model": "github-copilot/claude-sonnet-4.6",
+      "model": "ai-gateway/anthropic/claude-sonnet-4-6",
       "instructions": ["./agents/orchestrator.md"],
       "permission": {
         "read": "allow",
@@ -20,7 +20,7 @@
     },
     "investigator": {
       "description": "Searches Confluence docs and GitHub code to understand the issue, find procedures, and identify root causes.",
-      "model": "github-copilot/claude-sonnet-4.6",
+      "model": "ai-gateway/anthropic/claude-sonnet-4-6",
       "instructions": ["./agents/investigator.md"],
       "permission": {
         "read": "allow",
@@ -34,7 +34,7 @@
     },
     "data-analyst": {
       "description": "Queries BigQuery to check pricing data, find errors, and validate hypotheses from the investigation phase.",
-      "model": "github-copilot/claude-sonnet-4.6",
+      "model": "ai-gateway/anthropic/claude-sonnet-4-6",
       "instructions": ["./agents/data-analyst.md"],
       "permission": {
         "read": "allow",
