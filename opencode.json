@@ -1,0 +1,84 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "github-copilot/claude-sonnet-4.6",
+  "instructions": ["./AGENTS.md"],
+  "agent": {
+    "orchestrator": {
+      "description": "Receives support requests, delegates investigation and data analysis, composes the final response.",
+      "mode": "primary",
+      "model": "github-copilot/claude-sonnet-4.6",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "deny",
+        "bash": "deny",
+        "task": "allow",
+        "websearch": "allow"
+      }
+    },
+    "investigator": {
+      "description": "Searches Confluence docs and GitHub code to understand the issue, find procedures, and identify root causes.",
+      "model": "github-copilot/claude-sonnet-4.6",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "deny",
+        "bash": "deny",
+        "task": "deny",
+        "websearch": "allow"
+      }
+    },
+    "data-analyst": {
+      "description": "Queries BigQuery to check pricing data, find errors, and validate hypotheses from the investigation phase.",
+      "model": "github-copilot/claude-sonnet-4.6",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "deny",
+        "bash": "deny",
+        "task": "deny",
+        "websearch": "deny"
+      }
+    }
+  },
+  "mcp": {
+    "bigquery": {
+      "type": "local",
+      "command": ["bash", "./mcp-servers/bigquery/bq-mcp-server.sh"],
+      "environment": {
+        "GCP_PROJECT": "{env:GCP_PROJECT}",
+        "BQ_DATASET": "{env:BQ_DATASET}"
+      }
+    },
+    "confluence": {
+      "type": "local",
+      "command": ["bash", "./mcp-servers/confluence/confluence-mcp-server.sh"],
+      "environment": {
+        "CONFLUENCE_URL": "{env:CONFLUENCE_URL}",
+        "CONFLUENCE_USER": "{env:CONFLUENCE_USER}",
+        "CONFLUENCE_TOKEN": "{env:CONFLUENCE_TOKEN}",
+        "CONFLUENCE_SPACE": "{env:CONFLUENCE_SPACE}"
+      }
+    },
+    "jira": {
+      "type": "local",
+      "command": ["bash", "./mcp-servers/jira/jira-mcp-server.sh"],
+      "environment": {
+        "JIRA_URL": "{env:JIRA_URL}",
+        "JIRA_USER": "{env:JIRA_USER}",
+        "JIRA_TOKEN": "{env:JIRA_TOKEN}",
+        "JIRA_PROJECT": "{env:JIRA_PROJECT}"
+      }
+    },
+    "github": {
+      "type": "local",
+      "command": ["bash", "./mcp-servers/github/github-mcp-server.sh", "--org", "kramphub", "--org", "krampcom"],
+      "environment": {
+        "GITHUB_TOKEN": "{env:GITHUB_TOKEN}"
+      }
+    }
+  }
+}
