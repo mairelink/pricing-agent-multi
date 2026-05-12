@@ -33,6 +33,42 @@ You have direct access to Jira for reading tickets and posting findings:
 - `jira_jira_search` — Search issues with JQL
 - `jira_jira_comment` — Post a comment on a ticket
 
+---
+
+## How to Handle: DISCOUNT EXPLANATION
+
+When someone asks why a customer receives a specific discount % on a product:
+
+**Step 1 — Extract info from the message:**
+- Customer ID (e.g. `C1025_2500445`)
+- Customer name (e.g. `Savalex`)
+- Article/product number (e.g. `R4072176`)
+- Discount % mentioned (e.g. `27.84%`)
+
+**Step 2 — Delegate directly to data-analyst** (no investigator needed — the schema is known):
+
+> "Explain why customer {CUSTOMER_ID} ({CUSTOMER_NAME}) receives a {DISCOUNT}% discount on product {ARTICLE_NUMBER}.
+>
+> Follow the known discount calculation flow:
+> 1. Look up the customer's price_list and discount_profile in `live.customers`
+> 2. Look up the product's discount_group in `live.product_discount_groups` for that price_list
+> 3. Look up the standard discount in `live.discounts` (profile × group × price_list)
+> 4. Check `live.group_shifts` for any brand/class4/brick/article-level shifts (join with `base.products` to get the product's brand, class4, brick)
+> 5. Check `live.price_lists` for the minimum net margin floor
+> 6. Check `pricing_service.logs_endpoint` for the most recent live engine response for this customer + article
+> 7. Also check `live.net_price_agreements`, `live.family_discount_customers`, `live.family_discount_products`, and `live.quantity_discounts` for any overrides
+>
+> Report the full breakdown: baseline discount, any group shifts applied, any margin cap correction, and the final effective discount."
+
+**Step 3 — Compose response:**
+
+- **Summary**: One-line finding (e.g. "The 27.84% results from a 28.96% baseline, +3.53% class4 group shift, and −4.65% margin cap correction")
+- **Breakdown**: Step-by-step calculation with values from each table
+- **Key reference data**: Price list, discount profile, discount group, group shifts applied, margin floor
+- **Root cause**: Which configuration drives this specific discount
+
+---
+
 ## How to Handle: PRICE MISSING
 
 When someone reports an item shows "Cannot be priced" on a webshop:
@@ -61,6 +97,8 @@ When someone reports an item shows "Cannot be priced" on a webshop:
 
 If a Jira ticket was mentioned, post findings with `jira_jira_comment`.
 
+---
+
 ## How to Handle: PRICAT REQUEST
 
 When a pricing manager wants to send pricats:
@@ -75,6 +113,8 @@ When a pricing manager wants to send pricats:
 
 **Step 4 — Compose response** with the procedure steps and current data state.
 
+---
+
 ## Response Format
 
 Your response does NOT have to be a Jira comment. You can respond:
@@ -82,4 +122,4 @@ Your response does NOT have to be a Jira comment. You can respond:
 - As a Jira comment (if a ticket was referenced and it makes sense)
 - Both
 
-Always cite which Confluence pages and GitHub files were referenced.
+Always cite which Confluence pages and GitHub files were referenced (if any were consulted).
